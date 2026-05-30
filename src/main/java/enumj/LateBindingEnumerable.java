@@ -64,7 +64,9 @@ public final class LateBindingEnumerable<E> extends AbstractEnumerable<E> {
     public void bind(Iterable<? extends E> source) {
         Checks.ensureNonEnumerating(this);
         Checks.ensureNotNull(source, Messages.NULL_ENUMERATOR_SOURCE);
-        this.source = (Iterable<E>)source;
+        @SuppressWarnings("unchecked")
+        final Iterable<E> checkedSource = (Iterable<E>)source;
+        this.source = checkedSource;
     }
 
     /**
