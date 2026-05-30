@@ -81,6 +81,6 @@ final class PipeSource<E> extends IteratorEnumerator<E> {
      * @return {@link PipeSource} instance.
      */
     static <T> PipeSource<T> of(Iterator<T> source) {
-        return new PipeSource(source);
+        return new PipeSource<T>(source);
     }
 }

@@ -46,7 +46,7 @@ class PipeEnumerator<E> extends AbstractEnumerator<E> {
 
     private LinkedList<AbstractPipeProcessor>      pipeline;
     private LinkedList<AbstractPipeMultiProcessor> multiPipeline;
-    private LinkedList<PipeSource>                 sources;
+    private LinkedList<PipeSource<?>>              sources;
     private Nullable<E>                            value;
     private long                                   needValueForHasNext;
 
@@ -120,7 +120,7 @@ class PipeEnumerator<E> extends AbstractEnumerator<E> {
             last.setNext((AbstractPipeProcessor)processor);
         }
         if (!sources.isEmpty()) {
-            final PipeSource source = sources.getLast();
+            final PipeSource<?> source = sources.getLast();
             source.setFirstProcessorIfNone(processor);
             processor.setSource(source);
         }
@@ -177,7 +177,7 @@ class PipeEnumerator<E> extends AbstractEnumerator<E> {
             last.setNext((AbstractPipeProcessor)processor);
         }
         if (!sources.isEmpty()) {
-            final PipeSource source = sources.getLast();
+            final PipeSource<?> source = sources.getLast();
             source.setFirstProcessorIfNone(processor);
             processor.setSource(source);
         }
@@ -404,7 +404,7 @@ class PipeEnumerator<E> extends AbstractEnumerator<E> {
      */
     protected void dequeueSourcesUpToProcessor(
             AbstractPipeProcessor processor) {
-        final PipeSource processorSource = processor.getSource();
+        final PipeSource<?> processorSource = processor.getSource();
         while(processorSource != sources.getFirst()) {
             dequeueSourceWithProcessors();
         }
@@ -417,7 +417,7 @@ class PipeEnumerator<E> extends AbstractEnumerator<E> {
      * @param removed {@link PipeSource} that has just been removed and need
      * its processors to be removed as well.
      */
-    protected void dequeueSourceProcessors(PipeSource removed) {
+    protected void dequeueSourceProcessors(PipeSource<?> removed) {
         if (sources.isEmpty()) {
             pipeline.clear();
             multiPipeline.clear();
@@ -425,7 +425,7 @@ class PipeEnumerator<E> extends AbstractEnumerator<E> {
         }
 
         AbstractPipeProcessor firstInPipeline = pipeline.peekFirst();
-        final PipeSource firstSource = sources.getFirst();
+        final PipeSource<?> firstSource = sources.getFirst();
 
         if (firstSource.getFirstProcessor() == null) {
             if (removed.getFirstProcessor() != null) {
@@ -691,7 +691,8 @@ class PipeEnumerator<E> extends AbstractEnumerator<E> {
         PipeEnumerator<Optional<E>> optionalPipe =
                 (PipeEnumerator<Optional<E>>)map(e -> Optional.of(e))
                 .concat(Enumerator.of(() -> Optional.of(Optional.empty())));
-        return optionalPipe.enqueueProcessor(new ZipPipeProcessor(first, rest));
+        return optionalPipe.enqueueProcessor(
+                new ZipPipeProcessor<E>(first, rest));
     }
 
     // ---------------------------------------------------------------------- //
@@ -816,9 +817,10 @@ class PipeEnumerator<E> extends AbstractEnumerator<E> {
      * @param rest rest of {@code Iterator} instances to zip with.
      * @return this {@link PipeEnumerator}.
      */
-    public PipeEnumerator<E> reversedZipAll(Iterator<?> first,
-                                            List<Iterator<?>> rest) {
-        pushFrontProcessor(new ZipPipeProcessor(first, rest));
+    public PipeEnumerator<E> reversedZipAll(
+            Iterator<? extends E> first,
+            List<? extends Iterator<? extends E>> rest) {
+        pushFrontProcessor(new ZipPipeProcessor<E>(first, rest));
         reversedConcat(Enumerator.of(() -> Optional.of(Optional.empty())));
         return reversedMap(e -> Optional.of(e));
     }

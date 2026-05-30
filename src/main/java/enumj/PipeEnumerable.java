@@ -66,8 +66,8 @@ final class PipeEnumerable<T,E> extends AbstractEnumerable<E> {
         Checks.ensureNotNull(operator, Messages.NULL_PIPE_PROCESSOR_OPERATOR);
         this.source = source;
         this.pipeSource = Optional.empty();
-        this.reversedOperator = new PipeOperator(operator, onceOnly);
-        this.onceOnly = new Lazy(this::getOnceOnly);
+        this.reversedOperator = new PipeOperator<E,T>(operator, onceOnly);
+        this.onceOnly = new Lazy<Boolean>(this::getOnceOnly);
     }
     /**
      * Constructs a {@code PipeEnumerable} using a {@code Enumerable} as a link.
@@ -87,8 +87,8 @@ final class PipeEnumerable<T,E> extends AbstractEnumerable<E> {
         Checks.ensureNotNull(operator, Messages.NULL_PIPE_PROCESSOR_OPERATOR);
         this.source = source;
         this.pipeSource = Optional.of(source);
-        this.reversedOperator = new PipeOperator(operator, onceOnly);
-        this.onceOnly = new Lazy(this::getOnceOnly);
+        this.reversedOperator = new PipeOperator<E,T>(operator, onceOnly);
+        this.onceOnly = new Lazy<Boolean>(this::getOnceOnly);
     }
 
     private Boolean getOnceOnly() {
@@ -114,6 +114,7 @@ final class PipeEnumerable<T,E> extends AbstractEnumerable<E> {
         return onceOnly.get();
     }
     @Override
+    @SuppressWarnings("unchecked")
     protected Enumerator<E> internalEnumerator() {
         PipeEnumerator en = new PipeEnumerator();
         PipeEnumerable<?,?> ptr = this;

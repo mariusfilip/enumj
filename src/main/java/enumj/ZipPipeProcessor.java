@@ -36,7 +36,7 @@ import java.util.Optional;
 final class ZipPipeProcessor<E>
             extends AbstractPipeProcessor<Optional<E>,Optional<E>[]> {
 
-    private final Iterator<E>[] iterators;
+    private final Iterator<? extends E>[] iterators;
     private       Optional<E>[] value;
     private       boolean       hasAny;
 
@@ -51,9 +51,13 @@ final class ZipPipeProcessor<E>
      * @param first first {@link Iterator} to use in zipping.
      * @param rest rest of {@link Iterator} instances to use in zipping.
      */
-    public ZipPipeProcessor(Iterator<E> first, List<Iterator<E>> rest) {
+    public ZipPipeProcessor(Iterator<? extends E> first,
+                            List<? extends Iterator<? extends E>> rest) {
         super(false, true);
-        iterators = new Iterator[1+rest.size()];
+        @SuppressWarnings("unchecked")
+        final Iterator<? extends E>[] its =
+                (Iterator<? extends E>[])new Iterator<?>[1+rest.size()];
+        iterators = its;
         iterators[0] = first;
         for(int i=1; i<iterators.length; ++i) {
             iterators[i] = rest.get(i-1);
@@ -62,7 +66,9 @@ final class ZipPipeProcessor<E>
 
     @Override
     public void processInputValue(Optional<E> value) {
-        final Optional[] tuple = new Optional[1+iterators.length];
+        @SuppressWarnings("unchecked")
+        final Optional<E>[] tuple = (Optional<E>[])
+                new Optional<?>[1+iterators.length];
         tuple[0] = value;
         hasAny = value.isPresent();
         for(int i=0; i<iterators.length; ++i) {

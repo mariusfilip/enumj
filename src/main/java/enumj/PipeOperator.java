@@ -55,7 +55,7 @@ final class PipeOperator<T,E> implements Function<Enumerator<T>,
     public PipeOperator(Function<Enumerator<T>,
                                  Enumerator<E>> operator,
                         Supplier<Boolean> onceOnly) {
-        this.onceOnly = new Lazy(onceOnly);
+        this.onceOnly = new Lazy<Boolean>(onceOnly);
         this.operator = operator;
     }
 

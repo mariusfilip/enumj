@@ -64,6 +64,6 @@ final class IterableEnumerable<E> extends AbstractEnumerable<E> {
         if (source instanceof Enumerable) {
             return (Enumerable<E>)source;
         }
-        return new IterableEnumerable(source);
+        return new IterableEnumerable<E>(source);
     }
 }
