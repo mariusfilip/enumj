@@ -35,6 +35,7 @@ import java.util.function.Function;
  * @see MapPipeProcessor
  * @see ZipPipeProcessor
  */
+@SuppressWarnings("hiding")
 final class FlatMapPipeProcessor<In,Out>
             extends AbstractPipeMultiProcessor<In,Out> {
 
