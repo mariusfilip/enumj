@@ -81,6 +81,7 @@ abstract class AbstractPipeProcessor<T,R> {
      * @see AbstractPipeProcessor
      * @see PipeSource
      */
+    @SuppressWarnings("rawtypes")
     private PipeSource source;
 
     /**
@@ -116,6 +117,7 @@ abstract class AbstractPipeProcessor<T,R> {
      * @return Value of {@link #source}.
      * @see #setSource(enumj.PipeSource)
      */
+    @SuppressWarnings("rawtypes")
     public PipeSource getSource() {
         return source;
     }
@@ -128,7 +130,7 @@ abstract class AbstractPipeProcessor<T,R> {
      * @param reference Value for {@link #source}.
      * @see #getSource()
      */
-    public void setSource(PipeSource reference) {
+    public void setSource(@SuppressWarnings("rawtypes") PipeSource reference) {
         if (this.source == null) {
             this.source = reference;
         } else {
